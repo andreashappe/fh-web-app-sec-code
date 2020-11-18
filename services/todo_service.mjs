@@ -6,12 +6,13 @@ export class TodoService {
 
     addTodo(text) {
         const id = get_next_id(this.data);
-        this.data.set(id, text);
-        return id
+        const newTodo = new Todo(id, text)
+        this.data.set(id, newTodo);
+        return newTodo;
     }
 
     getAllTodos() {
-        return Array.from(this.data)
+        return Array.from(this.data.values())
     }
 
     getTodo(id) {
@@ -35,4 +36,12 @@ function get_next_id(collection) {
 		}
 	}
 	return max + 1;
+}
+
+export class Todo {
+    constructor(id, text) {
+        this.id = id;
+        this.todo = text;
+        Object.freeze(this);
+    }
 }

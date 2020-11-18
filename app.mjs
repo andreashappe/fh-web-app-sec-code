@@ -1,51 +1,32 @@
 /* import needed parts */
 import express from 'express';
+import bodyParser from 'body-parser';
+import ejsLayout from 'express-ejs-layouts';
+import helmet from 'helmet';
+
 const app = express();
 
 import {TodoService} from './services/todo_service.mjs';
+import {setup_todo_routes} from './controllers/todo_controller.mjs';
 
-const todos = new TodoService();
+export const todos = new TodoService();
 todos.addTodo("first todos");
 todos.addTodo("second todos");
 
+/* setup application / application config */
+app.set("view engine", "ejs");
+app.set("layout", "layouts/default");
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(ejsLayout);
+app.use(helmet());
+
 /* setup request handler */
-app.get('/', function(req, res) {
-	res.send("Hello World from Express.js!");
+app.get("/", function (req, res) {
+    res.send("Hello World from Express.js!");
 });
 
-/* add todo application here */
-// LIST: GET /todos
-app.get("/todos", (req, res) => {
-	res.send(JSON.stringify(todos.getAllTodos()));
-});
-
-// CREATE: POST /todos
-// TODO: test
-app.post("/todos", (req, res) => {
-	const text = req.body.todos;
-
-	const id = todos.addTodo(text);
-
-	res.send("todo added: " + id);
-});
-
-// READ: GET /todos/<id>
-app.get("/todos/:id", (req, res) => {
-	const id = parseInt(req.params.id);
-
-	const todo = todos.getTodo(id);
-
-	res.send("the todo: " + todo);
-});
-
-// DELETE: DELETE /todos/<id> 
-app.delete("/todos/:id", (req, res) => {
-	const id = parseInt(req.params.id);
-
-	const todo = todos.deleteTodo(id);
-	
-	res.send("todo deleted");
-});
+app.use("/todos", setup_todo_routes(express.Router()));
 
 /* start-up the server on port 3000 */
 const server = app.listen(3000, function() {

@@ -1,0 +1,14 @@
+<h1>My Todos</h1>
+<ul>
+    <% for(let todo of todos) { %>
+    <li>
+        <a href="/todos/<%=todo.id%>"><%= todo.todo %></a>
+    </li>
+    <% } %>
+</ul>
+
+<h1>New Todo</h1>
+<form action="/todos" method="POST">
+    Neues Todo: <input type="text" name="newTodo">
+    <input type="submit" value="Neues Todo anlegen">
+</form>
