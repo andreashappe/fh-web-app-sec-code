@@ -4,12 +4,18 @@ import bodyParser from 'body-parser';
 import ejsLayout from 'express-ejs-layouts';
 import helmet from 'helmet';
 
-const app = express();
-
 import {TodoService} from './services/todo_service.mjs';
+import {TodoSqliteStorage} from './models/todo_sqlite_storage.mjs';
 import {setup_todo_routes} from './controllers/todo_controller.mjs';
 
-export const todos = new TodoService();
+const app = express();
+
+const storage = await TodoSqliteStorage.build();
+//const storage = TodoMemoryStorage();
+
+export const todos = new TodoService(storage);
+
+// add some debug data
 todos.addTodo("first todos");
 todos.addTodo("second todos");
 
@@ -22,7 +28,7 @@ app.use(ejsLayout);
 app.use(helmet());
 
 /* setup request handler */
-app.get("/", function (req, res) {
+app.get("/", async function (req, res) {
     res.send("Hello World from Express.js!");
 });
 
