@@ -20,6 +20,7 @@
     "express-session": "^1.17.1",
     "express-winston": "^4.0.5",
     "helmet": "^4.2.0",
+    "njwt": "^1.0.0",
     "sqlite-async": "^1.1.0",
     "winston": "^3.3.3"
   },

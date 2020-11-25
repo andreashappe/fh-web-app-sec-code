@@ -1,5 +1,5 @@
-import { users } from '../app.mjs';
 import {todos} from './../app.mjs';
+import {generateJWT} from './../services/jwt_service.mjs';
 
 // the C in MVC
 export function setup_todo_routes(router) {
@@ -9,7 +9,8 @@ export function setup_todo_routes(router) {
         const tmp = await todos.getAllTodos(req.current_user)
 
         res.render('todos/index', { "todos" : tmp,
-                                    "user": req.current_user
+                                    "user": req.current_user,
+                                    "token": generateJWT(req.current_user)
                                   })
     });
 

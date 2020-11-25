@@ -28,7 +28,8 @@ export function setup_session_routes(router) {
 
 export async function authenticateUser(req, res, next) {
     if (req.url === "/" ||
-        (req.url === "/session" && req.method === "POST")) {
+        (req.url === "/session" && req.method === "POST") ||
+        (req.url.startsWith("/api/"))) {
         next();
     } else {
         if (req.session.user_id) {

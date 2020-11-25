@@ -14,6 +14,7 @@ import { UserService } from './services/user_service.mjs';
 import { setup_todo_routes } from './controllers/todo_controller.mjs';
 import { authenticateUser, setup_session_routes } from './controllers/session_controller.mjs';
 import { DatabaseManager } from './models/database_manager.mjs';
+import { verifyJWT } from './services/jwt_service.mjs';
 
 const app = express();
 dotenv.config();
@@ -66,8 +67,11 @@ app.use(expressWinston.logger({
     ignoreRoute: function (req, res) { return false; } // optional: allows to skip some log messages based on request and/or response
   }));
 
+
 /* authentication middleware */
 app.use(authenticateUser);
+
+
 
 /* setup request handler */
 app.get("/", async function (req, res) {
@@ -81,6 +85,34 @@ app.use("/session", rateLimit({
     max: 100,
     windowMs: 1*60*1000
 }));
+
+app.use(async function (req, res, next) {
+    if (req.url.startsWith("/api")) {
+        const header = req.headers["authorization"];
+    
+        if (header.startsWith("Bearer ")) {
+            const token = header.substring(6).trim();
+            const verifiedToken = verifyJWT(token);
+            req.token = verifiedToken;
+            req.current_user = await users.getUser(verifiedToken.body.sub);
+            next();
+        } else {
+            res.send("token error");
+        }
+    } else {
+        next();
+    }
+});
+
+app.get("/api/v1/todos", async function (req,res) {
+    const scope = req.token.body.scope;
+
+    if ("todos" in scope && scope["todos"].includes("index")) {
+        res.send(await todos.getAllTodos(req.current_user));
+        return;
+    }
+    res.send("error!");
+});
 
 app.use(expressWinston.errorLogger({
     transports: [
