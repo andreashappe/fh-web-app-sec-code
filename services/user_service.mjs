@@ -1,4 +1,13 @@
 import bcrypt from 'bcrypt';
+import winston from 'winston';
+
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    transports: [
+      new winston.transports.Console()
+    ],
+  });
 
 export class UserService {
     constructor(db) {
@@ -18,8 +27,15 @@ export class UserService {
         const hashIsTheSame = await bcrypt.compare(password, theUser.password);
         
         if (hashIsTheSame) {
+            logger.info("user logged in", {
+                "user_id" : theUser.id,
+                "username": username
+            });
             return theUser;
         } else {
+            logger.warn("user failed to login", {
+                "username": username
+            });
             return null;
         }
     }
