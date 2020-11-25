@@ -46,15 +46,16 @@ app.use(session({
 }));
 
 /* authentication middleware */
-app.use(function (req, res, next) {
+app.use(async function (req, res, next) {
     if (req.url === "/" ||
         (req.url === "/session" && req.method === "POST")) {
         next();
     } else {
-        if (req.session.user_id == null) {
-            res.redirect("/");
-        } else {
+        if (req.session.user_id) {
+            req.current_user = await users.getUser(req.session.user_id);
             next();
+        } else {
+            res.redirect("/");
         }
     }
 });
@@ -72,7 +73,7 @@ app.post("/session", async function(req, res) {
 
     if (theUser) {
         req.session.regenerate( function (error) {
-            req.session.user_id = theUser.username;
+            req.session.user_id = theUser.id;
             res.redirect("/todos");
         });
     } else {

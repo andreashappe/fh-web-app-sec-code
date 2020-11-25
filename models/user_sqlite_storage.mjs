@@ -39,4 +39,14 @@ export class UserSqliteStorage {
         return result;
     }
 
+
+    async getUserById(id) {
+        const stmt = "select rowid, username, password from users where rowid = ? limit 1";
+        let result = null;
+        await this.db.each(stmt, [id], (err, row) => {
+            result = new User(row.rowid, row.username, row.password);
+        });
+        return result;
+    }
+
 }

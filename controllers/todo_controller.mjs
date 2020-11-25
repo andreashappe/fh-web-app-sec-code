@@ -1,14 +1,16 @@
+import { users } from '../app.mjs';
 import {todos} from './../app.mjs';
 
 // the C in MVC
 export function setup_todo_routes(router) {
 
-    /* add todo application here */
     // LIST: GET /todos
     router.get("/", async (req, res) => {
         const tmp = await todos.getAllTodos()
 
-        res.render('todos/index', { "todos" : tmp })
+        res.render('todos/index', { "todos" : tmp,
+                                    "user": req.current_user
+                                  })
     });
 
     // CREATE: POST /todos
