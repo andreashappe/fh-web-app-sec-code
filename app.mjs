@@ -6,9 +6,10 @@ import helmet from 'helmet';
 import session from 'express-session';
 import dotenv from 'dotenv';
 
-import {TodoService} from './services/todo_service.mjs';
+import { TodoService } from './services/todo_service.mjs';
 import { UserService } from './services/user_service.mjs';
-import {setup_todo_routes} from './controllers/todo_controller.mjs';
+import { setup_todo_routes } from './controllers/todo_controller.mjs';
+import { authenticateUser, setup_session_routes } from './controllers/session_controller.mjs';
 import { DatabaseManager } from './models/database_manager.mjs';
 
 const app = express();
@@ -46,48 +47,15 @@ app.use(session({
 }));
 
 /* authentication middleware */
-app.use(async function (req, res, next) {
-    if (req.url === "/" ||
-        (req.url === "/session" && req.method === "POST")) {
-        next();
-    } else {
-        if (req.session.user_id) {
-            req.current_user = await users.getUser(req.session.user_id);
-            next();
-        } else {
-            res.redirect("/");
-        }
-    }
-});
+app.use(authenticateUser);
 
 /* setup request handler */
 app.get("/", async function (req, res) {
     res.render("index");
 });
 
-app.post("/session", async function(req, res) {
-    const username = req.body.username;
-    const password = req.body.password;
-
-    const theUser = await users.loginUser(username, password);
-
-    if (theUser) {
-        req.session.regenerate( function (error) {
-            req.session.user_id = theUser.id;
-            res.redirect("/todos");
-        });
-    } else {
-        res.render("index");
-    }
-});
-
-app.post("/session/logout", async function(req, res) {
-    req.session.destroy( function (error) {
-        res.redirect("/");    
-    });
-});
-
 app.use("/todos", setup_todo_routes(express.Router()));
+app.use("/session", setup_session_routes(express.Router()));
 
 /* start-up the server */
 const server = app.listen(process.env.NODE_PORT, function() {
