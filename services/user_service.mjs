@@ -1,32 +1,21 @@
 export class UserService {
-    constructor() {
-        this.db = new Map();
+    constructor(db) {
+        this.db = db;
         Object.freeze(this);
     }
 
-    addUser(username, password) {
-        if (this.db.has(username)) {
-            return null;
-        } else {
-            const theUser = new User(username, password);
-            this.db.set(username, theUser);
-            return theUser;
-        }
+    async addUser(username, password) {
+        return this.db.addUser(username, password);
     }
 
-    loginUser(username, password) {
-        if (this.db.has(username)) {
-            const theUser = this.db.get(username);
-            if (theUser.password === password) {
-                return theUser;
-            }
-        }
-        return null;
+    async loginUser(username, password) {
+        return this.db.loginUser(username, password);
     }
 }
 
 export class User {
-    constructor(username, password) {
+    constructor(id, username, password) {
+        this.id = id;
         this.username = username;
         this.password = password;
         Object.freeze(this);

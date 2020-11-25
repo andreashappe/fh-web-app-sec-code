@@ -1,12 +1,9 @@
 import { Todo } from './../services/todo_service.mjs';
-import Database from 'sqlite-async';
 
 export class TodoSqliteStorage {
 
-    static async build() {
-        const db = await Database.open(":memory:");
-        await db.run("CREATE TABLE todos (todo TEXT)");
-        return new TodoSqliteStorage(db);
+    static getDatabaseCreateStatement() {
+        return "CREATE TABLE todos (todo TEXT)";
     }
 
     constructor(db) {

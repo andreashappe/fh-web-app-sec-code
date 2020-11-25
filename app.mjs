@@ -8,19 +8,18 @@ import dotenv from 'dotenv';
 
 import {TodoService} from './services/todo_service.mjs';
 import { UserService } from './services/user_service.mjs';
-import {TodoSqliteStorage} from './models/todo_sqlite_storage.mjs';
 import {setup_todo_routes} from './controllers/todo_controller.mjs';
+import { DatabaseManager } from './models/database_manager.mjs';
 
 const app = express();
 dotenv.config();
 
-const storage = await TodoSqliteStorage.build();
+const database = await DatabaseManager.build();
 
-export const todos = new TodoService(storage);
-export const users = new UserService();
+export const todos = new TodoService(database.getTodoStorage());
+export const users = new UserService(database.getUserStorage());
 
 // add some debug data
-
 const andy = await users.addUser("andy", "trustno1");
 const admin = await users.addUser("admin", "toomanysecrets");
 
