@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import ejsLayout from 'express-ejs-layouts';
 import helmet from 'helmet';
 import session from 'express-session';
+import dotenv from 'dotenv';
 
 import {TodoService} from './services/todo_service.mjs';
 import { UserService } from './services/user_service.mjs';
@@ -11,6 +12,7 @@ import {TodoSqliteStorage} from './models/todo_sqlite_storage.mjs';
 import {setup_todo_routes} from './controllers/todo_controller.mjs';
 
 const app = express();
+dotenv.config();
 
 const storage = await TodoSqliteStorage.build();
 
@@ -33,7 +35,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(ejsLayout);
 app.use(helmet());
 app.use(session({
-    secret: 'keyboard cat',
+    secret: process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: true,
     name: "session",
@@ -87,7 +89,7 @@ app.post("/session/logout", async function(req, res) {
 
 app.use("/todos", setup_todo_routes(express.Router()));
 
-/* start-up the server on port 3000 */
-const server = app.listen(3000, function() {
+/* start-up the server */
+const server = app.listen(process.env.NODE_PORT, function() {
 	console.log("Server started! (Express.js)");
 });
