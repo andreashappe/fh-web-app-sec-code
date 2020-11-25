@@ -4,30 +4,31 @@ export class TodoService {
         Object.seal(this);
     }
 
-    addTodo(text) {
-        return this.data.addTodo(text);
+    addTodo(user, text) {
+        return this.data.addTodo(user.id, text);
     }
 
-    getAllTodos() {
-        return this.data.getAllTodos();
+    getAllTodos(user) {
+        return this.data.getAllTodos(user.id);
     }
 
-    getTodo(id) {
-        return this.data.getTodo(id);
+    getTodo(user, id) {
+        return this.data.getTodo(user.id, id);
     }
 
-    deleteTodo(id) {
-        return this.data.deleteTodo(id);
+    deleteTodo(user, id) {
+        return this.data.deleteTodo(user.id, id);
     }
 
-    getTodoCount() {
-        return this.data.getTodoCount();
+    getTodoCount(user) {
+        return this.data.getTodoCount(user.id);
     }
 }
 
 export class Todo {
-    constructor(id, text) {
+    constructor(id, user_id, text) {
         this.id = id;
+        this.user_id = user_id;
         this.todo = text;
         Object.freeze(this);
     }

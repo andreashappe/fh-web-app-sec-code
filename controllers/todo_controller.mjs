@@ -6,7 +6,7 @@ export function setup_todo_routes(router) {
 
     // LIST: GET /todos
     router.get("/", async (req, res) => {
-        const tmp = await todos.getAllTodos()
+        const tmp = await todos.getAllTodos(req.current_user)
 
         res.render('todos/index', { "todos" : tmp,
                                     "user": req.current_user
@@ -17,7 +17,7 @@ export function setup_todo_routes(router) {
     router.post("/", async (req, res) => {
         const text = req.body.newTodo;
 
-        const id = await todos.addTodo(text);
+        const id = await todos.addTodo(req.current_user, text);
 
         res.redirect("/todos");
     });
@@ -26,7 +26,7 @@ export function setup_todo_routes(router) {
     router.get("/:id", async (req, res) => {
         const id = parseInt(req.params.id);
 
-        const todo = await todos.getTodo(id);
+        const todo = await todos.getTodo(req.current_user, id);
 
         res.render("todos/show", { "todo" : todo });
     });
@@ -35,7 +35,7 @@ export function setup_todo_routes(router) {
     router.delete("/:id", async (req, res) => {
         const id = parseInt(req.params.id);
 
-        const todo = await todos.deleteTodo(id);
+        const todo = await todos.deleteTodo(req.current_user, id);
         
         res.send("todo deleted");
     });
@@ -43,7 +43,7 @@ export function setup_todo_routes(router) {
     router.post("/:id/delete", async (req, res) => {
         const id = parseInt(req.params.id);
 
-        const todo = await todos.deleteTodo(id);
+        const todo = await todos.deleteTodo(req.current_user, id);
         
         res.redirect("/todos");        
     });

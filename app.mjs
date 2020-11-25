@@ -24,8 +24,9 @@ export const users = new UserService(database.getUserStorage());
 const andy = await users.addUser("andy", "trustno1");
 const admin = await users.addUser("admin", "toomanysecrets");
 
-await todos.addTodo("first todos");
-await todos.addTodo("second todos");
+await todos.addTodo(andy, "first todo");
+await todos.addTodo(andy, "second todo");
+await todos.addTodo(admin, "smash the state");
 
 /* setup application / application config */
 app.set("view engine", "ejs");
